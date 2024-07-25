@@ -38,6 +38,7 @@ export interface BMOSettings {
 	prompts: {
 		prompt: string,
 		promptFolderPath: string,
+		titleGeneratePrompt: string,
 	},
 	editor: {
 		systen_role: string,
@@ -152,6 +153,7 @@ export const DEFAULT_SETTINGS: BMOSettings = {
 	prompts: {
 		prompt: '',
 		promptFolderPath: 'BMO/Prompts',
+		titleGeneratePrompt: 'You are a title generator. You will give succinct titles that does not contain backslashes, forward slashes, or colons. Only generate a title as your response for:\n\n',
 	},
 	editor: {
 		systen_role: 'You are a helpful assistant.',
@@ -622,6 +624,7 @@ export async function defaultFrontMatter(plugin: BMOGPT, file: TFile) {
         frontmatter.temperature = parseFloat(DEFAULT_SETTINGS.general.temperature);
         frontmatter.enable_reference_current_note = DEFAULT_SETTINGS.general.enableReferenceCurrentNote;
 		frontmatter.prompt = DEFAULT_SETTINGS.prompts.prompt;
+		frontmatter.title_generate_prompt = DEFAULT_SETTINGS.prompts.titleGeneratePrompt;
 		frontmatter.user_name = DEFAULT_SETTINGS.appearance.userName;
 		// frontmatter.chatbot_name = DEFAULT_SETTINGS.appearance.chatbotName;
 		frontmatter.enable_header = DEFAULT_SETTINGS.appearance.enableHeader;
@@ -677,6 +680,7 @@ export async function updateSettingsFromFrontMatter(plugin: BMOGPT, file: TFile)
 		plugin.settings.general.temperature = frontmatter.temperature;
 		plugin.settings.general.enableReferenceCurrentNote = frontmatter.enable_reference_current_note;
 		plugin.settings.prompts.prompt = frontmatter.prompt;
+		plugin.settings.prompts.titleGeneratePrompt = frontmatter.title_generate_prompt;
 		plugin.settings.appearance.userName = frontmatter.user_name;
 		plugin.settings.appearance.chatbotName = file.basename;
 		plugin.settings.appearance.enableHeader = frontmatter.enable_header;
@@ -733,6 +737,7 @@ export async function updateFrontMatter(plugin: BMOGPT, file: TFile){
         frontmatter.temperature = parseFloat(plugin.settings.general.temperature);
         frontmatter.enable_reference_current_note = plugin.settings.general.enableReferenceCurrentNote;
 		frontmatter.prompt = plugin.settings.prompts.prompt.replace('.md', '');
+		frontmatter.title_generate_prompt = plugin.settings.prompts.titleGeneratePrompt;
 		frontmatter.user_name = plugin.settings.appearance.userName;
 		// frontmatter.chatbot_name = plugin.settings.appearance.chatbotName;
 		frontmatter.enable_header = plugin.settings.appearance.enableHeader;
@@ -817,9 +822,11 @@ export async function updateProfile(plugin: BMOGPT, file: TFile) {
 			}
 
 			if (frontmatter.prompt && (frontmatter.prompt !== '')) {
-				plugin.settings.prompts.prompt = frontmatter.prompt + '.md'
+				plugin.settings.prompts.prompt = frontmatter.prompt + '.md';
+				plugin.settings.prompts.titleGeneratePrompt = frontmatter.title_generate_prompt;
 			} else {
 				plugin.settings.prompts.prompt = DEFAULT_SETTINGS.prompts.prompt;
+				plugin.settings.prompts.titleGeneratePrompt = DEFAULT_SETTINGS.prompts.titleGeneratePrompt;
 			}
 
 			if (frontmatter.user_name) {

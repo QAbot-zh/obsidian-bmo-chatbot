@@ -8,8 +8,7 @@ import { ANTHROPIC_MODELS, OPENAI_MODELS } from 'src/view';
 export async function fetchModelRenameTitle(settings: BMOSettings, referenceCurrentNoteContent: string) {
     const clearYamlContent = referenceCurrentNoteContent.replace(/---[\s\S]+?---/, '').trim();
     
-    const prompt = `You are a title generator. You will give succinct titles that does not contain backslashes,
-                    forward slashes, or colons. Only generate a title as your response for:\n\n`;
+    const prompt = settings.prompts.titleGeneratePrompt;
 
     try {
         if (settings.OllamaConnection.RESTAPIURL && settings.OllamaConnection.ollamaModels.includes(settings.general.model)) {
